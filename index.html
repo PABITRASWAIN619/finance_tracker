@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Finance Tracker Pro AI</title>
+
+    <link rel="stylesheet" href="style.css" />
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script type="module" src="script.js" defer></script>
+  </head>
+
+  <body>
+    <!-- HEADER -->
+    <header>
+      <h1>💰 Finance Tracker Pro AI</h1>
+
+      <button onclick="toggleTheme()">🌙</button>
+    </header>
+
+    <!-- HERO -->
+    <section class="hero">
+      <img
+        src="https://images.unsplash.com/photo-1554224155-6726b3ff858f"
+        class="hero-img"
+      />
+
+      <div class="hero-text">
+        <h1>Take Control of Your Money</h1>
+        <p>Track expenses, set budgets, and get AI insights instantly.</p>
+      </div>
+    </section>
+
+    <!-- SUMMARY -->
+    <section class="summary">
+      <div class="card">
+        <h3>Budget</h3>
+        <h2 id="budgetVal">₹0</h2>
+      </div>
+
+      <div class="card">
+        <h3>Expenses</h3>
+        <h2 id="expenseVal">₹0</h2>
+      </div>
+
+      <div class="card">
+        <h3>Remaining</h3>
+        <h2 id="remainVal">₹0</h2>
+      </div>
+    </section>
+
+    <!-- AI -->
+    <section class="ai">
+      <div class="card">
+        <h3>🤖 AI Insight</h3>
+        <p id="aiInsight">Loading...</p>
+      </div>
+    </section>
+
+    <!-- BUDGET -->
+    <section class="budget">
+      <input type="number" id="budgetInput" placeholder="Enter Your Budget" />
+
+      <button onclick="setBudget()">Set Budget</button>
+    </section>
+
+    <!-- EXPENSE FORM -->
+    <section class="expense-form">
+      <!-- TITLE -->
+      <input type="text" id="title" placeholder="Expense Title" />
+
+      <!-- AMOUNT -->
+      <input type="number" id="amount" placeholder="Expense Amount" />
+
+      <!-- CATEGORY -->
+      <select id="category">
+        <option value="Food">🍔 Food</option>
+
+        <option value="Travel">✈ Travel</option>
+
+        <option value="Shopping">🛍 Shopping</option>
+
+        <option value="Others">📦 Others</option>
+      </select>
+
+      <!-- DATE -->
+      <input type="date" id="date" />
+
+      <!-- BUTTON -->
+      <button onclick="addExpense()">➕ Add Expense</button>
+    </section>
+
+    <!-- LIST -->
+    <section id="expenseList"></section>
+
+    <!-- CHARTS -->
+    <section class="charts">
+      <canvas id="pieChart"></canvas>
+      <canvas id="barChart"></canvas>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+      <div class="footer-container">
+        <div>
+          <h2>💰 Finance Tracker</h2>
+          <p>AI Based Expense Management System</p>
+        </div>
+
+        <div>
+          <h3>Links</h3>
+          <a href="#">Dashboard</a>
+          <a href="#">Reports</a>
+        </div>
+      </div>
+
+      <div class="footer-bottom">© 2026 Finance Tracker Pro</div>
+    </footer>
+  </body>
+</html>
