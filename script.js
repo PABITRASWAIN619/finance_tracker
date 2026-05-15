@@ -6,27 +6,37 @@ import {
   orderBy
 } from "./firebase.js";
 
-import { generateAIResponse } from "./ai.js";
+import { generateAIResponse }
+from "./ai.js";
 
 import {
   deleteDoc,
   doc,
   getFirestore
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+}
+from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 /* ================= GLOBALS ================= */
 
 let expenses = [];
 
-let budget = localStorage.getItem("budget") || 0;
+let budget =
+  Number(localStorage.getItem("budget")) || 0;
 
 let pieInstance = null;
+
 let barInstance = null;
 
 /* ================= THEME ================= */
 
 if (localStorage.getItem("theme") === "light") {
+
   document.body.classList.add("light");
+
+  const btn =
+    document.getElementById("themeBtn");
+
+  if (btn) btn.innerText = "☀";
 }
 
 window.toggleTheme = function () {
@@ -39,33 +49,61 @@ window.toggleTheme = function () {
       : "dark";
 
   localStorage.setItem("theme", mode);
+
+  const btn =
+    document.getElementById("themeBtn");
+
+  if (mode === "light") {
+
+    btn.innerText = "☀";
+
+  } else {
+
+    btn.innerText = "🌙";
+  }
 };
 
 /* ================= BUDGET ================= */
 
 window.setBudget = function () {
 
-  budget = Number(
-    document.getElementById("budgetInput").value
-  );
+  let value =
+    document.getElementById("budgetInput").value;
+
+  if (!value) {
+
+    alert("Enter budget amount");
+
+    return;
+  }
+
+  budget = Number(value);
 
   localStorage.setItem("budget", budget);
 
   updateDashboard();
+
+  document.getElementById("budgetInput").value = "";
 };
 
 /* ================= FIREBASE REALTIME ================= */
 
-const q = query(expensesRef, orderBy("createdAt", "desc"));
+const q = query(
+  expensesRef,
+  orderBy("createdAt", "desc")
+);
 
 onSnapshot(q, (snapshot) => {
 
   expenses = snapshot.docs.map(doc => ({
+
     id: doc.id,
+
     ...doc.data()
   }));
 
   render();
+
   updateDashboard();
 });
 
@@ -73,11 +111,11 @@ onSnapshot(q, (snapshot) => {
 
 window.addExpense = async function () {
 
-  const title = document.getElementById("title").value;
+  const title =
+    document.getElementById("title").value.trim();
 
-  const amount = Number(
-    document.getElementById("amount").value
-  );
+  const amount =
+    Number(document.getElementById("amount").value);
 
   const category =
     document.getElementById("category").value;
@@ -86,20 +124,31 @@ window.addExpense = async function () {
     document.getElementById("date").value;
 
   if (!title || !amount || !date) {
+
     alert("Please fill all fields");
+
     return;
   }
 
   await addDoc(expensesRef, {
+
     title,
+
     amount,
+
     category,
+
     date,
+
     createdAt: Date.now()
   });
 
+  /* CLEAR FORM */
+
   document.getElementById("title").value = "";
+
   document.getElementById("amount").value = "";
+
   document.getElementById("date").value = "";
 };
 
@@ -109,8 +158,20 @@ window.deleteExpense = async function(id) {
 
   const db = getFirestore();
 
-  await deleteDoc(doc(db, "expenses", id));
+  await deleteDoc(
+    doc(db, "expenses", id)
+  );
 };
+
+/* ================= SEARCH + FILTER ================= */
+
+document
+  .getElementById("searchInput")
+  .addEventListener("input", render);
+
+document
+  .getElementById("filterCategory")
+  .addEventListener("change", render);
 
 /* ================= RENDER ================= */
 
@@ -121,27 +182,86 @@ function render() {
 
   list.innerHTML = "";
 
-  expenses.forEach(e => {
+  const search =
+    document
+      .getElementById("searchInput")
+      .value
+      .toLowerCase();
+
+  const filter =
+    document
+      .getElementById("filterCategory")
+      .value;
+
+  let filtered = expenses.filter(e => {
+
+    const matchSearch =
+      e.title.toLowerCase().includes(search);
+
+    const matchFilter =
+      filter === "All" ||
+      e.category === filter;
+
+    return matchSearch && matchFilter;
+  });
+
+  /* EMPTY */
+
+  if (!filtered.length) {
+
+    list.innerHTML = `
+
+      <div class="card">
+
+        <h3>
+          No expenses found 😔
+        </h3>
+
+      </div>
+    `;
+
+    drawCharts([]);
+
+    return;
+  }
+
+  /* RENDER ITEMS */
+
+  filtered.forEach(e => {
 
     list.innerHTML += `
 
       <div class="item">
 
-        <span>
-          ${e.title}
-          - ₹${e.amount}
-          (${e.category})
-        </span>
+        <div>
 
-        <button onclick="deleteExpense('${e.id}')">
-          Delete
+          <h3>
+            ${e.title}
+          </h3>
+
+          <p>
+
+            ₹${e.amount}
+
+            • ${e.category}
+
+            • ${e.date}
+
+          </p>
+
+        </div>
+
+        <button
+          onclick="deleteExpense('${e.id}')"
+        >
+          ❌
         </button>
 
       </div>
     `;
   });
 
-  drawCharts();
+  drawCharts(filtered);
 }
 
 /* ================= DASHBOARD ================= */
@@ -149,7 +269,9 @@ function render() {
 function updateDashboard() {
 
   let total = expenses.reduce(
+
     (a, b) => a + b.amount,
+
     0
   );
 
@@ -169,12 +291,13 @@ function updateDashboard() {
 
 /* ================= CHARTS ================= */
 
-function drawCharts() {
+function drawCharts(data = expenses) {
 
   let cat = {};
+
   let month = {};
 
-  expenses.forEach(e => {
+  data.forEach(e => {
 
     cat[e.category] =
       (cat[e.category] || 0) + e.amount;
@@ -188,50 +311,137 @@ function drawCharts() {
   /* DESTROY OLD */
 
   if (pieInstance) pieInstance.destroy();
+
   if (barInstance) barInstance.destroy();
 
-  /* PIE */
+  /* PIE CHART */
 
   pieInstance = new Chart(
+
     document.getElementById("pieChart"),
+
     {
       type: "pie",
 
       data: {
+
         labels: Object.keys(cat),
 
         datasets: [{
-          data: Object.values(cat)
+
+          data: Object.values(cat),
+
+          backgroundColor: [
+
+            "#3b82f6",
+
+            "#8b5cf6",
+
+            "#06b6d4",
+
+            "#10b981"
+          ],
+
+          borderWidth: 0
         }]
+      },
+
+      options: {
+
+        responsive: true,
+
+        plugins: {
+
+          legend: {
+
+            labels: {
+
+              color: "white",
+
+              font: {
+
+                size: 14
+              }
+            }
+          }
+        }
       }
     }
   );
 
-  /* BAR */
+  /* BAR CHART */
 
   barInstance = new Chart(
+
     document.getElementById("barChart"),
+
     {
       type: "bar",
 
       data: {
+
         labels: Object.keys(month),
 
         datasets: [{
-          data: Object.values(month)
+
+          label: "Monthly Expenses",
+
+          data: Object.values(month),
+
+          backgroundColor: "#3b82f6",
+
+          borderRadius: 10
         }]
+      },
+
+      options: {
+
+        responsive: true,
+
+        scales: {
+
+          y: {
+
+            ticks: {
+
+              color: "white"
+            },
+
+            grid: {
+
+              color: "rgba(255,255,255,0.1)"
+            }
+          },
+
+          x: {
+
+            ticks: {
+
+              color: "white"
+            },
+
+            grid: {
+
+              color: "rgba(255,255,255,0.1)"
+            }
+          }
+        },
+
+        plugins: {
+
+          legend: {
+
+            labels: {
+
+              color: "white"
+            }
+          }
+        }
       }
     }
   );
 }
-window.setBudget = function () {
 
-  let value =
-    document.getElementById("budgetInput").value;
+/* ================= INITIAL LOAD ================= */
 
-  budget = Number(value);
-
-  localStorage.setItem("budget", budget);
-
-  updateDashboard();
-};
+updateDashboard();

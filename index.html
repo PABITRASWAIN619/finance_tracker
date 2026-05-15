@@ -2,80 +2,100 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <title>Finance Tracker Pro AI</title>
 
+    <!-- CSS -->
     <link rel="stylesheet" href="style.css" />
 
+    <!-- CHART -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+    <!-- JS -->
     <script type="module" src="script.js" defer></script>
   </head>
 
   <body>
-    <!-- HEADER -->
+    <!-- ================= HEADER ================= -->
+
     <header>
       <h1>💰 Finance Tracker Pro AI</h1>
 
-      <button onclick="toggleTheme()">🌙</button>
+      <button onclick="toggleTheme()" id="themeBtn">🌙</button>
     </header>
 
-    <!-- HERO -->
+    <!-- ================= HERO ================= -->
+
     <section class="hero">
       <img
         src="https://images.unsplash.com/photo-1554224155-6726b3ff858f"
+        alt="Finance Banner"
         class="hero-img"
       />
 
+      <div class="hero-overlay"></div>
+
       <div class="hero-text">
         <h1>Take Control of Your Money</h1>
-        <p>Track expenses, set budgets, and get AI insights instantly.</p>
+
+        <p>
+          Track expenses, manage budgets, and get AI-powered financial insights
+          instantly.
+        </p>
+
+        <button>🚀 Start Tracking</button>
       </div>
     </section>
 
-    <!-- SUMMARY -->
+    <!-- ================= SUMMARY ================= -->
+
     <section class="summary">
       <div class="card">
-        <h3>Budget</h3>
+        <h3>💵 Budget</h3>
+
         <h2 id="budgetVal">₹0</h2>
       </div>
 
       <div class="card">
-        <h3>Expenses</h3>
+        <h3>📉 Expenses</h3>
+
         <h2 id="expenseVal">₹0</h2>
       </div>
 
       <div class="card">
-        <h3>Remaining</h3>
+        <h3>💰 Remaining</h3>
+
         <h2 id="remainVal">₹0</h2>
       </div>
     </section>
 
-    <!-- AI -->
+    <!-- ================= AI ================= -->
+
     <section class="ai">
-      <div class="card">
+      <div class="card ai-card">
         <h3>🤖 AI Insight</h3>
-        <p id="aiInsight">Loading...</p>
+
+        <p id="aiInsight">Loading insights...</p>
       </div>
     </section>
 
-    <!-- BUDGET -->
+    <!-- ================= BUDGET ================= -->
+
     <section class="budget">
-      <input type="number" id="budgetInput" placeholder="Enter Your Budget" />
+      <input type="number" id="budgetInput" placeholder="Enter Budget" />
 
       <button onclick="setBudget()">Set Budget</button>
     </section>
 
-    <!-- EXPENSE FORM -->
+    <!-- ================= EXPENSE FORM ================= -->
+
     <section class="expense-form">
-      <!-- TITLE -->
       <input type="text" id="title" placeholder="Expense Title" />
 
-      <!-- AMOUNT -->
       <input type="number" id="amount" placeholder="Expense Amount" />
 
-      <!-- CATEGORY -->
       <select id="category">
         <option value="Food">🍔 Food</option>
 
@@ -86,38 +106,71 @@
         <option value="Others">📦 Others</option>
       </select>
 
-      <!-- DATE -->
       <input type="date" id="date" />
 
-      <!-- BUTTON -->
       <button onclick="addExpense()">➕ Add Expense</button>
     </section>
 
-    <!-- LIST -->
+    <!-- ================= SEARCH FILTER ================= -->
+
+    <section class="filters">
+      <input type="text" id="searchInput" placeholder="🔍 Search expense..." />
+
+      <select id="filterCategory">
+        <option value="All">All Categories</option>
+
+        <option value="Food">🍔 Food</option>
+
+        <option value="Travel">✈ Travel</option>
+
+        <option value="Shopping">🛍 Shopping</option>
+
+        <option value="Others">📦 Others</option>
+      </select>
+    </section>
+
+    <!-- ================= EXPENSE LIST ================= -->
+
     <section id="expenseList"></section>
 
-    <!-- CHARTS -->
+    <!-- ================= CHARTS ================= -->
+
     <section class="charts">
       <canvas id="pieChart"></canvas>
+
       <canvas id="barChart"></canvas>
     </section>
 
-    <!-- FOOTER -->
+    <!-- ================= FOOTER ================= -->
+
     <footer class="footer">
       <div class="footer-container">
         <div>
           <h2>💰 Finance Tracker</h2>
-          <p>AI Based Expense Management System</p>
+
+          <p>Smart AI-based expense management system.</p>
         </div>
 
         <div>
-          <h3>Links</h3>
+          <h3>Quick Links</h3>
+
           <a href="#">Dashboard</a>
+
           <a href="#">Reports</a>
+
+          <a href="#">Analytics</a>
+        </div>
+
+        <div>
+          <h3>Connect</h3>
+
+          <a href="#">GitHub</a>
+
+          <a href="#">LinkedIn</a>
         </div>
       </div>
 
-      <div class="footer-bottom">© 2026 Finance Tracker Pro</div>
+      <div class="footer-bottom">© 2026 Finance Tracker Pro AI</div>
     </footer>
   </body>
 </html>
