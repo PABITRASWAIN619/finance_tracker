@@ -1,136 +1,194 @@
-import {
-  expensesRef,
-  addDoc,
-  onSnapshot,
-  query,
-  orderBy
-} from "./firebase.js";
-
-import { generateAIResponse }
-from "./ai.js";
-
-import {
-  deleteDoc,
-  doc,
-  getFirestore
-}
-from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
 /* ================= GLOBALS ================= */
 
-let expenses = [];
+let expenses =
+  JSON.parse(
+    localStorage.getItem("expenses")
+  ) || [];
 
 let budget =
-  Number(localStorage.getItem("budget")) || 0;
+  Number(
+    localStorage.getItem("budget")
+  ) || 0;
 
-let pieInstance = null;
+let pieChart;
 
-let barInstance = null;
+/* ================= USER SYSTEM ================= */
+
+function initializeUser() {
+
+  const savedUser =
+    localStorage.getItem("username");
+
+  if (savedUser) {
+
+    document.getElementById(
+      "welcomeScreen"
+    ).style.display = "none";
+
+    document.getElementById(
+      "mainApp"
+    ).style.display = "block";
+
+    document.getElementById(
+      "displayUsername"
+    ).innerText = savedUser;
+  }
+}
+
+window.saveUsername = function () {
+
+  const username =
+    document.getElementById(
+      "usernameInput"
+    ).value.trim();
+
+  if (!username) {
+
+    alert("Please enter your name");
+
+    return;
+  }
+
+  localStorage.setItem(
+    "username",
+    username
+  );
+
+  initializeUser();
+};
+
+initializeUser();
 
 /* ================= THEME ================= */
 
-if (localStorage.getItem("theme") === "light") {
+if (
+  localStorage.getItem("theme")
+  === "light"
+) {
 
-  document.body.classList.add("light");
-
-  const btn =
-    document.getElementById("themeBtn");
-
-  if (btn) btn.innerText = "☀";
+  document.body.classList.add(
+    "light"
+  );
 }
 
 window.toggleTheme = function () {
 
-  document.body.classList.toggle("light");
+  document.body.classList.toggle(
+    "light"
+  );
 
-  let mode =
-    document.body.classList.contains("light")
+  const mode =
+    document.body.classList.contains(
+      "light"
+    )
       ? "light"
       : "dark";
 
-  localStorage.setItem("theme", mode);
-
-  const btn =
-    document.getElementById("themeBtn");
-
-  if (mode === "light") {
-
-    btn.innerText = "☀";
-
-  } else {
-
-    btn.innerText = "🌙";
-  }
+  localStorage.setItem(
+    "theme",
+    mode
+  );
 };
+
+/* ================= DATE VALIDATION ================= */
+
+const today =
+  new Date()
+    .toISOString()
+    .split("T")[0];
+
+document.getElementById(
+  "date"
+).setAttribute(
+  "max",
+  today
+);
 
 /* ================= BUDGET ================= */
 
+document.getElementById(
+  "budgetInput"
+).value = budget;
+
 window.setBudget = function () {
 
-  let value =
-    document.getElementById("budgetInput").value;
+  const value =
+    document.getElementById(
+      "budgetInput"
+    ).value;
 
   if (!value) {
 
-    alert("Enter budget amount");
+    alert("Enter budget");
 
     return;
   }
 
   budget = Number(value);
 
-  localStorage.setItem("budget", budget);
+  localStorage.setItem(
+    "budget",
+    budget
+  );
 
   updateDashboard();
 
-  document.getElementById("budgetInput").value = "";
+  alert("Budget Saved Successfully ✅");
 };
-
-/* ================= FIREBASE REALTIME ================= */
-
-const q = query(
-  expensesRef,
-  orderBy("createdAt", "desc")
-);
-
-onSnapshot(q, (snapshot) => {
-
-  expenses = snapshot.docs.map(doc => ({
-
-    id: doc.id,
-
-    ...doc.data()
-  }));
-
-  render();
-
-  updateDashboard();
-});
 
 /* ================= ADD EXPENSE ================= */
 
-window.addExpense = async function () {
+window.addExpense = function () {
 
   const title =
-    document.getElementById("title").value.trim();
+    document.getElementById(
+      "title"
+    ).value.trim();
 
   const amount =
-    Number(document.getElementById("amount").value);
+    Number(
+      document.getElementById(
+        "amount"
+      ).value
+    );
 
   const category =
-    document.getElementById("category").value;
+    document.getElementById(
+      "category"
+    ).value;
 
   const date =
-    document.getElementById("date").value;
+    document.getElementById(
+      "date"
+    ).value;
 
-  if (!title || !amount || !date) {
+  /* VALIDATION */
 
-    alert("Please fill all fields");
+  if (
+    !title ||
+    !amount ||
+    !date
+  ) {
+
+    alert(
+      "Please fill all fields"
+    );
 
     return;
   }
 
-  await addDoc(expensesRef, {
+  if (date > today) {
+
+    alert(
+      "Future dates are not allowed"
+    );
+
+    return;
+  }
+
+  expenses.push({
+
+    id: Date.now(),
 
     title,
 
@@ -138,72 +196,146 @@ window.addExpense = async function () {
 
     category,
 
-    date,
-
-    createdAt: Date.now()
+    date
   });
 
-  /* CLEAR FORM */
+  localStorage.setItem(
 
-  document.getElementById("title").value = "";
+    "expenses",
 
-  document.getElementById("amount").value = "";
+    JSON.stringify(expenses)
+  );
 
-  document.getElementById("date").value = "";
+  render();
+
+  updateDashboard();
+
+  /* CLEAR INPUTS */
+
+  document.getElementById(
+    "title"
+  ).value = "";
+
+  document.getElementById(
+    "amount"
+  ).value = "";
+
+  document.getElementById(
+    "date"
+  ).value = "";
 };
 
 /* ================= DELETE ================= */
 
-window.deleteExpense = async function(id) {
+window.deleteExpense = function (id) {
 
-  const db = getFirestore();
+  expenses =
+    expenses.filter(
+      e => e.id !== id
+    );
 
-  await deleteDoc(
-    doc(db, "expenses", id)
+  localStorage.setItem(
+    "expenses",
+    JSON.stringify(expenses)
   );
+
+  render();
+
+  updateDashboard();
 };
 
-/* ================= SEARCH + FILTER ================= */
+/* ================= EDIT ================= */
 
-document
-  .getElementById("searchInput")
-  .addEventListener("input", render);
+window.editExpense = function (id) {
 
-document
-  .getElementById("filterCategory")
-  .addEventListener("change", render);
+  const expense =
+    expenses.find(
+      e => e.id === id
+    );
+
+  if (!expense) return;
+
+  document.getElementById(
+    "title"
+  ).value = expense.title;
+
+  document.getElementById(
+    "amount"
+  ).value = expense.amount;
+
+  document.getElementById(
+    "category"
+  ).value = expense.category;
+
+  document.getElementById(
+    "date"
+  ).value = expense.date;
+
+  /* REMOVE OLD */
+
+  expenses =
+    expenses.filter(
+      e => e.id !== id
+    );
+
+  localStorage.setItem(
+    "expenses",
+    JSON.stringify(expenses)
+  );
+
+  render();
+
+  updateDashboard();
+
+  window.scrollTo({
+
+    top: 0,
+
+    behavior: "smooth"
+  });
+};
 
 /* ================= RENDER ================= */
 
 function render() {
 
   const list =
-    document.getElementById("expenseList");
-
-  list.innerHTML = "";
+    document.getElementById(
+      "expenseList"
+    );
 
   const search =
-    document
-      .getElementById("searchInput")
-      .value
-      .toLowerCase();
+    document.getElementById(
+      "searchInput"
+    ).value.toLowerCase();
 
   const filter =
-    document
-      .getElementById("filterCategory")
-      .value;
+    document.getElementById(
+      "filterCategory"
+    ).value;
 
-  let filtered = expenses.filter(e => {
+  /* FILTER */
 
-    const matchSearch =
-      e.title.toLowerCase().includes(search);
+  let filtered =
+    expenses.filter(e => {
 
-    const matchFilter =
-      filter === "All" ||
-      e.category === filter;
+      const matchesSearch =
+        e.title
+          .toLowerCase()
+          .includes(search);
 
-    return matchSearch && matchFilter;
-  });
+      const matchesFilter =
+        filter === "All"
+        ||
+        e.category === filter;
+
+      return (
+        matchesSearch &&
+        matchesFilter
+      );
+    });
+
+  list.innerHTML = "";
 
   /* EMPTY */
 
@@ -220,12 +352,12 @@ function render() {
       </div>
     `;
 
-    drawCharts([]);
+    drawChart();
 
     return;
   }
 
-  /* RENDER ITEMS */
+  /* SHOW LIST */
 
   filtered.forEach(e => {
 
@@ -240,208 +372,204 @@ function render() {
           </h3>
 
           <p>
-
             ₹${e.amount}
-
             • ${e.category}
-
             • ${e.date}
-
           </p>
 
         </div>
 
-        <button
-          onclick="deleteExpense('${e.id}')"
-        >
-          ❌
-        </button>
+        <div class="item-buttons">
+
+          <button
+            onclick="editExpense(${e.id})"
+          >
+            ✏ Edit
+          </button>
+
+          <button
+            onclick="deleteExpense(${e.id})"
+          >
+            🗑 Delete
+          </button>
+
+        </div>
 
       </div>
     `;
   });
 
-  drawCharts(filtered);
+  drawChart();
 }
 
 /* ================= DASHBOARD ================= */
 
 function updateDashboard() {
 
-  let total = expenses.reduce(
+  let total =
+    expenses.reduce(
+      (a, b) => a + b.amount,
+      0
+    );
 
-    (a, b) => a + b.amount,
+  document.getElementById(
+    "budgetVal"
+  ).innerText =
+    `₹${budget}`;
 
-    0
-  );
+  document.getElementById(
+    "expenseVal"
+  ).innerText =
+    `₹${total}`;
 
-  document.getElementById("budgetVal")
-    .innerText = `₹${budget}`;
+  document.getElementById(
+    "remainVal"
+  ).innerText =
+    `₹${budget - total}`;
 
-  document.getElementById("expenseVal")
-    .innerText = `₹${total}`;
-
-  document.getElementById("remainVal")
-    .innerText = `₹${budget - total}`;
-
-  document.getElementById("aiInsight")
-    .innerText =
-      generateAIResponse(expenses, budget);
+  generateAI(total);
 }
 
-/* ================= CHARTS ================= */
+/* ================= AI ================= */
 
-function drawCharts(data = expenses) {
+function generateAI(total) {
 
-  let cat = {};
+  let msg = "";
 
-  let month = {};
+  if (
+    budget > 0 &&
+    total > budget
+  ) {
 
-  data.forEach(e => {
+    msg =
+      "⚠ Overspending detected! Reduce unnecessary expenses.";
+  }
 
-    cat[e.category] =
-      (cat[e.category] || 0) + e.amount;
+  else if (
+    total > budget * 0.7
+  ) {
 
-    let m = e.date.slice(0, 7);
+    msg =
+      "📊 You are close to your budget limit.";
+  }
 
-    month[m] =
-      (month[m] || 0) + e.amount;
+  else {
+
+    msg =
+      "✅ Your spending looks healthy.";
+  }
+
+  document.getElementById(
+    "aiInsight"
+  ).innerText = msg;
+}
+
+/* ================= CHART ================= */
+
+function drawChart() {
+
+  const ctx =
+    document.getElementById(
+      "pieChart"
+    );
+
+  let categories = {};
+
+  expenses.forEach(e => {
+
+    categories[e.category] =
+      (categories[e.category] || 0)
+      + e.amount;
   });
 
   /* DESTROY OLD */
 
-  if (pieInstance) pieInstance.destroy();
+  if (pieChart) {
 
-  if (barInstance) barInstance.destroy();
+    pieChart.destroy();
+  }
 
-  /* PIE CHART */
+  pieChart = new Chart(ctx, {
 
-  pieInstance = new Chart(
+    type: "doughnut",
 
-    document.getElementById("pieChart"),
+    data: {
 
-    {
-      type: "pie",
+      labels:
+        Object.keys(categories),
 
-      data: {
+      datasets: [{
 
-        labels: Object.keys(cat),
+        data:
+          Object.values(categories),
 
-        datasets: [{
+        backgroundColor: [
 
-          data: Object.values(cat),
+          "#3b82f6",
+          "#8b5cf6",
+          "#06b6d4",
+          "#10b981",
+          "#f59e0b",
+          "#ef4444"
+        ],
 
-          backgroundColor: [
+        hoverOffset: 15,
 
-            "#3b82f6",
+        borderRadius: 10,
 
-            "#8b5cf6",
+        borderWidth: 3,
 
-            "#06b6d4",
+        borderColor: "#0f172a"
+      }]
+    },
 
-            "#10b981"
-          ],
+    options: {
 
-          borderWidth: 0
-        }]
-      },
+      responsive: true,
 
-      options: {
+      cutout: "65%",
 
-        responsive: true,
+      plugins: {
 
-        plugins: {
+        legend: {
 
-          legend: {
+          position: "bottom",
 
-            labels: {
+          labels: {
 
-              color: "white",
+            color: "white",
 
-              font: {
+            padding: 20,
 
-                size: 14
-              }
+            font: {
+
+              size: 14
             }
           }
         }
       }
     }
-  );
-
-  /* BAR CHART */
-
-  barInstance = new Chart(
-
-    document.getElementById("barChart"),
-
-    {
-      type: "bar",
-
-      data: {
-
-        labels: Object.keys(month),
-
-        datasets: [{
-
-          label: "Monthly Expenses",
-
-          data: Object.values(month),
-
-          backgroundColor: "#3b82f6",
-
-          borderRadius: 10
-        }]
-      },
-
-      options: {
-
-        responsive: true,
-
-        scales: {
-
-          y: {
-
-            ticks: {
-
-              color: "white"
-            },
-
-            grid: {
-
-              color: "rgba(255,255,255,0.1)"
-            }
-          },
-
-          x: {
-
-            ticks: {
-
-              color: "white"
-            },
-
-            grid: {
-
-              color: "rgba(255,255,255,0.1)"
-            }
-          }
-        },
-
-        plugins: {
-
-          legend: {
-
-            labels: {
-
-              color: "white"
-            }
-          }
-        }
-      }
-    }
-  );
+  });
 }
 
-/* ================= INITIAL LOAD ================= */
+/* ================= SEARCH ================= */
+
+document.getElementById(
+  "searchInput"
+).addEventListener(
+  "input",
+  render
+);
+
+document.getElementById(
+  "filterCategory"
+).addEventListener(
+  "change",
+  render
+);
+
+/* ================= INIT ================= */
+
+render();
 
 updateDashboard();

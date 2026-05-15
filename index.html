@@ -7,170 +7,202 @@
 
     <title>Finance Tracker Pro AI</title>
 
-    <!-- CSS -->
     <link rel="stylesheet" href="style.css" />
 
-    <!-- CHART -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <!-- JS -->
     <script type="module" src="script.js" defer></script>
   </head>
 
   <body>
-    <!-- ================= HEADER ================= -->
+    <!-- ================= WELCOME ================= -->
 
-    <header>
-      <h1>💰 Finance Tracker Pro AI</h1>
+    <div class="welcome-screen" id="welcomeScreen">
+      <div class="welcome-box">
+        <h1>💰 Finance Tracker</h1>
 
-      <button onclick="toggleTheme()" id="themeBtn">🌙</button>
-    </header>
+        <p>Smart AI Expense Management</p>
 
-    <!-- ================= HERO ================= -->
+        <input type="text" id="usernameInput" placeholder="Enter Your Name" />
 
-    <section class="hero">
-      <img
-        src="https://images.unsplash.com/photo-1554224155-6726b3ff858f"
-        alt="Finance Banner"
-        class="hero-img"
-      />
-
-      <div class="hero-overlay"></div>
-
-      <div class="hero-text">
-        <h1>Take Control of Your Money</h1>
-
-        <p>
-          Track expenses, manage budgets, and get AI-powered financial insights
-          instantly.
-        </p>
-
-        <button>🚀 Start Tracking</button>
+        <button onclick="saveUsername()">Enter Dashboard</button>
       </div>
-    </section>
+    </div>
 
-    <!-- ================= SUMMARY ================= -->
+    <!-- ================= MAIN APP ================= -->
 
-    <section class="summary">
-      <div class="card">
-        <h3>💵 Budget</h3>
+    <div id="mainApp" style="display: none">
+      <!-- ================= HEADER ================= -->
 
-        <h2 id="budgetVal">₹0</h2>
-      </div>
+      <header>
+        <h1>💰 Finance Tracker Pro AI</h1>
 
-      <div class="card">
-        <h3>📉 Expenses</h3>
+        <div class="header-right">
+          <div class="user-box">👋 <span id="displayUsername"></span></div>
 
-        <h2 id="expenseVal">₹0</h2>
-      </div>
+          <button onclick="toggleTheme()" id="themeBtn">🌙</button>
+        </div>
+      </header>
 
-      <div class="card">
-        <h3>💰 Remaining</h3>
+      <!-- ================= HERO ================= -->
 
-        <h2 id="remainVal">₹0</h2>
-      </div>
-    </section>
+      <section class="hero">
+        <img
+          src="https://images.unsplash.com/photo-1554224155-6726b3ff858f"
+          class="hero-img"
+        />
 
-    <!-- ================= AI ================= -->
+        <div class="hero-overlay"></div>
 
-    <section class="ai">
-      <div class="card ai-card">
-        <h3>🤖 AI Insight</h3>
+        <div class="hero-text">
+          <h1>Take Control of Your Money</h1>
 
-        <p id="aiInsight">Loading insights...</p>
-      </div>
-    </section>
+          <p>Track expenses, manage budgets, and get AI insights instantly.</p>
+        </div>
+      </section>
 
-    <!-- ================= BUDGET ================= -->
+      <!-- ================= SUMMARY ================= -->
 
-    <section class="budget">
-      <input type="number" id="budgetInput" placeholder="Enter Budget" />
+      <section class="summary">
+        <div class="card">
+          <h3>💵 Budget</h3>
 
-      <button onclick="setBudget()">Set Budget</button>
-    </section>
-
-    <!-- ================= EXPENSE FORM ================= -->
-
-    <section class="expense-form">
-      <input type="text" id="title" placeholder="Expense Title" />
-
-      <input type="number" id="amount" placeholder="Expense Amount" />
-
-      <select id="category">
-        <option value="Food">🍔 Food</option>
-
-        <option value="Travel">✈ Travel</option>
-
-        <option value="Shopping">🛍 Shopping</option>
-
-        <option value="Others">📦 Others</option>
-      </select>
-
-      <input type="date" id="date" />
-
-      <button onclick="addExpense()">➕ Add Expense</button>
-    </section>
-
-    <!-- ================= SEARCH FILTER ================= -->
-
-    <section class="filters">
-      <input type="text" id="searchInput" placeholder="🔍 Search expense..." />
-
-      <select id="filterCategory">
-        <option value="All">All Categories</option>
-
-        <option value="Food">🍔 Food</option>
-
-        <option value="Travel">✈ Travel</option>
-
-        <option value="Shopping">🛍 Shopping</option>
-
-        <option value="Others">📦 Others</option>
-      </select>
-    </section>
-
-    <!-- ================= EXPENSE LIST ================= -->
-
-    <section id="expenseList"></section>
-
-    <!-- ================= CHARTS ================= -->
-
-    <section class="charts">
-      <canvas id="pieChart"></canvas>
-
-      <canvas id="barChart"></canvas>
-    </section>
-
-    <!-- ================= FOOTER ================= -->
-
-    <footer class="footer">
-      <div class="footer-container">
-        <div>
-          <h2>💰 Finance Tracker</h2>
-
-          <p>Smart AI-based expense management system.</p>
+          <h2 id="budgetVal">₹0</h2>
         </div>
 
-        <div>
-          <h3>Quick Links</h3>
+        <div class="card">
+          <h3>📉 Expenses</h3>
 
-          <a href="#">Dashboard</a>
-
-          <a href="#">Reports</a>
-
-          <a href="#">Analytics</a>
+          <h2 id="expenseVal">₹0</h2>
         </div>
 
-        <div>
-          <h3>Connect</h3>
+        <div class="card">
+          <h3>💰 Remaining</h3>
 
-          <a href="#">GitHub</a>
-
-          <a href="#">LinkedIn</a>
+          <h2 id="remainVal">₹0</h2>
         </div>
-      </div>
+      </section>
 
-      <div class="footer-bottom">© 2026 Finance Tracker Pro AI</div>
-    </footer>
+      <!-- ================= AI ================= -->
+
+      <section class="ai">
+        <div class="card ai-card">
+          <h3>🤖 AI Insight</h3>
+
+          <p id="aiInsight">Loading insights...</p>
+        </div>
+      </section>
+
+      <!-- ================= BUDGET ================= -->
+
+      <section class="budget">
+        <input type="number" id="budgetInput" placeholder="Enter Budget" />
+
+        <button onclick="setBudget()">Set Budget</button>
+      </section>
+
+      <!-- ================= EXPENSE FORM ================= -->
+
+      <section class="expense-form">
+        <input type="text" id="title" placeholder="Expense Title" />
+
+        <input type="number" id="amount" placeholder="Expense Amount" />
+
+        <select id="category">
+          <option value="Food">🍔 Food</option>
+
+          <option value="Travel">✈ Travel</option>
+
+          <option value="Shopping">🛍 Shopping</option>
+
+          <option value="Bills">💡 Bills</option>
+
+          <option value="Healthcare">🏥 Healthcare</option>
+
+          <option value="Others">📦 Others</option>
+        </select>
+
+        <!-- DATE VALIDATION -->
+
+        <input type="date" id="date" max="" />
+
+        <button onclick="addExpense()">➕ Add Expense</button>
+      </section>
+
+      <!-- ================= EXPENSE LIST ================= -->
+
+      <h2 class="section-title">📋 Expense History List</h2>
+
+      <section id="expenseList"></section>
+      <!-- ================= FILTER ================= -->
+
+      <section class="filters">
+        <input
+          type="text"
+          id="searchInput"
+          placeholder="🔍 Search expense..."
+        />
+
+        <select id="filterCategory">
+          <option value="All">All Categories</option>
+
+          <option value="Food">🍔 Food</option>
+
+          <option value="Travel">✈ Travel</option>
+
+          <option value="Shopping">🛍 Shopping</option>
+
+          <option value="Bills">💡 Bills</option>
+
+          <option value="Healthcare">🏥 Healthcare</option>
+
+          <option value="Others">📦 Others</option>
+        </select>
+      </section>
+
+      <!-- ================= EXPENSE LIST ================= -->
+
+      <h2 class="section-title">📋 Expense History List</h2>
+
+      <section id="expenseList"></section>
+
+      <!-- ================= CHART ================= -->
+
+      <section class="charts">
+        <canvas id="pieChart"></canvas>
+      </section>
+
+      <!-- ================= FOOTER ================= -->
+
+      <footer class="footer">
+        <div class="footer-container">
+          <div id="dashboard">
+            <h2>💰 Finance Tracker</h2>
+
+            <p>Smart AI Expense Management</p>
+          </div>
+
+          <div>
+            <h3>Quick Links</h3>
+
+            <a href="#dashboard"> Dashboard </a>
+
+            <a href="#expenseList"> Expenses </a>
+
+            <a href="#analytics"> Analytics </a>
+          </div>
+
+          <div>
+            <h3>Connect</h3>
+
+            <a href="https://github.com/" target="_blank"> GitHub </a>
+
+            <a href="https://linkedin.com/" target="_blank"> LinkedIn </a>
+          </div>
+        </div>
+
+        <div class="footer-bottom">© 2026 Finance Tracker Pro AI</div>
+      </footer>
+    </div>
   </body>
 </html>
