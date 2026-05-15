@@ -131,15 +131,16 @@ Smart AI messages:
 # 📁 Project Structure
 
 ```bash
-Finance-Tracker/
+finance-tracker/
 │
-├── index.html
-├── style.css
-├── script.js
-└── README.md
-```
-
----
+├── index.html       → Main UI
+├── style.css        → Design
+├── script.js        → Main app logic
+├── firebase.js      → Firebase backend
+├── ai.js            → AI features
+├── report.js        → Report generation
+├── jspdf.umd.min.js → PDF library
+└── README.md        → Project info
 
 # ▶ How To Run
 
@@ -185,8 +186,8 @@ Frontend Developer & AI Enthusiast
 
 If you like this project:
 
-⭐ Star the repository  
-⭐ Fork the repository  
+⭐ Star the repository
+⭐ Fork the repository
 ⭐ Share with friends
 
 ---
@@ -194,3 +195,4 @@ If you like this project:
 # ❤️ Thank You
 
 Thank you for using Finance Tracker Pro AI.
+```
