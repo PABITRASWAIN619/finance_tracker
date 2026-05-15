@@ -12,28 +12,113 @@ let budget =
 
 let pieChart;
 
-/* ================= USER SYSTEM ================= */
+/* ================= PAGE LOAD ================= */
 
-function initializeUser() {
+window.onload = function () {
 
-  const savedUser =
-    localStorage.getItem("username");
+  checkLogin();
 
-  if (savedUser) {
+  render();
+
+  updateDashboard();
+
+  setupTheme();
+
+  setupDateValidation();
+};
+
+/* ================= LOGIN SYSTEM ================= */
+
+/*
+IMPORTANT FIX:
+
+1. First time user:
+   -> Show welcome screen
+
+2. After login:
+   -> Stay in dashboard
+
+3. If user changes tab/minimize:
+   -> Dashboard should NOT reset
+
+4. Only show welcome screen again
+   if browser fully closed and reopened
+*/
+
+/* SESSION CHECK */
+
+function checkLogin() {
+
+  const username =
+    localStorage.getItem(
+      "username"
+    );
+
+  const activeSession =
+    sessionStorage.getItem(
+      "activeSession"
+    );
+
+  /* FIRST TIME OPEN */
+
+  if (
+    !username ||
+    !activeSession
+  ) {
+
+    showWelcomeScreen();
+
+    return;
+  }
+
+  /* USER ALREADY LOGGED */
+
+  showDashboard(username);
+}
+
+/* SHOW WELCOME */
+
+function showWelcomeScreen() {
+
+  document.getElementById(
+    "welcomeScreen"
+  ).style.display = "flex";
+
+  document.getElementById(
+    "mainApp"
+  ).style.display = "none";
+
+  const oldUser =
+    localStorage.getItem(
+      "username"
+    );
+
+  if (oldUser) {
 
     document.getElementById(
-      "welcomeScreen"
-    ).style.display = "none";
-
-    document.getElementById(
-      "mainApp"
-    ).style.display = "block";
-
-    document.getElementById(
-      "displayUsername"
-    ).innerText = savedUser;
+      "usernameInput"
+    ).value = oldUser;
   }
 }
+
+/* SHOW DASHBOARD */
+
+function showDashboard(username) {
+
+  document.getElementById(
+    "welcomeScreen"
+  ).style.display = "none";
+
+  document.getElementById(
+    "mainApp"
+  ).style.display = "block";
+
+  document.getElementById(
+    "displayUsername"
+  ).innerText = username;
+}
+
+/* ================= SAVE USER ================= */
 
 window.saveUsername = function () {
 
@@ -44,31 +129,87 @@ window.saveUsername = function () {
 
   if (!username) {
 
-    alert("Please enter your name");
+    alert(
+      "Please enter your name"
+    );
 
     return;
   }
+
+  /* SAVE USER */
 
   localStorage.setItem(
     "username",
     username
   );
 
-  initializeUser();
+  /* SESSION LOGIN */
+
+  sessionStorage.setItem(
+    "activeSession",
+    "true"
+  );
+
+  /* SHOW DASHBOARD */
+
+  showDashboard(username);
+
+  /* MOBILE FIX */
+
+  setTimeout(() => {
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
+
+  }, 100);
 };
 
-initializeUser();
+/* ================= ENTER KEY ================= */
+
+document.addEventListener(
+  "DOMContentLoaded",
+  function () {
+
+    const input =
+      document.getElementById(
+        "usernameInput"
+      );
+
+    if (input) {
+
+      input.addEventListener(
+        "keypress",
+        function (e) {
+
+          if (e.key === "Enter") {
+
+            saveUsername();
+          }
+        }
+      );
+    }
+  }
+);
 
 /* ================= THEME ================= */
 
-if (
-  localStorage.getItem("theme")
-  === "light"
-) {
+function setupTheme() {
 
-  document.body.classList.add(
-    "light"
-  );
+  const savedTheme =
+    localStorage.getItem("theme");
+
+  if (savedTheme === "light") {
+
+    document.body.classList.add(
+      "light"
+    );
+
+    document.getElementById(
+      "themeBtn"
+    ).innerHTML = "☀";
+  }
 }
 
 window.toggleTheme = function () {
@@ -77,32 +218,44 @@ window.toggleTheme = function () {
     "light"
   );
 
-  const mode =
+  const isLight =
     document.body.classList.contains(
       "light"
-    )
-      ? "light"
-      : "dark";
+    );
 
   localStorage.setItem(
     "theme",
-    mode
+    isLight
+      ? "light"
+      : "dark"
   );
+
+  document.getElementById(
+    "themeBtn"
+  ).innerHTML =
+    isLight
+      ? "☀"
+      : "🌙";
+
+  render();
 };
 
 /* ================= DATE VALIDATION ================= */
 
-const today =
-  new Date()
-    .toISOString()
-    .split("T")[0];
+function setupDateValidation() {
 
-document.getElementById(
-  "date"
-).setAttribute(
-  "max",
-  today
-);
+  const today =
+    new Date()
+      .toISOString()
+      .split("T")[0];
+
+  document.getElementById(
+    "date"
+  ).setAttribute(
+    "max",
+    today
+  );
+}
 
 /* ================= BUDGET ================= */
 
@@ -119,7 +272,9 @@ window.setBudget = function () {
 
   if (!value) {
 
-    alert("Enter budget");
+    alert(
+      "Please enter budget"
+    );
 
     return;
   }
@@ -133,7 +288,9 @@ window.setBudget = function () {
 
   updateDashboard();
 
-  alert("Budget Saved Successfully ✅");
+  alert(
+    "Budget Saved Successfully ✅"
+  );
 };
 
 /* ================= ADD EXPENSE ================= */
@@ -162,7 +319,10 @@ window.addExpense = function () {
       "date"
     ).value;
 
-  /* VALIDATION */
+  const today =
+    new Date()
+      .toISOString()
+      .split("T")[0];
 
   if (
     !title ||
@@ -210,8 +370,6 @@ window.addExpense = function () {
 
   updateDashboard();
 
-  /* CLEAR INPUTS */
-
   document.getElementById(
     "title"
   ).value = "";
@@ -228,6 +386,13 @@ window.addExpense = function () {
 /* ================= DELETE ================= */
 
 window.deleteExpense = function (id) {
+
+  const confirmDelete =
+    confirm(
+      "Delete this expense?"
+    );
+
+  if (!confirmDelete) return;
 
   expenses =
     expenses.filter(
@@ -271,8 +436,6 @@ window.editExpense = function (id) {
     "date"
   ).value = expense.date;
 
-  /* REMOVE OLD */
-
   expenses =
     expenses.filter(
       e => e.id !== id
@@ -314,8 +477,6 @@ function render() {
       "filterCategory"
     ).value;
 
-  /* FILTER */
-
   let filtered =
     expenses.filter(e => {
 
@@ -337,13 +498,11 @@ function render() {
 
   list.innerHTML = "";
 
-  /* EMPTY */
-
   if (!filtered.length) {
 
     list.innerHTML = `
 
-      <div class="card">
+      <div class="card empty-card">
 
         <h3>
           No expenses found 😔
@@ -357,15 +516,13 @@ function render() {
     return;
   }
 
-  /* SHOW LIST */
-
-  filtered.forEach(e => {
+  filtered.reverse().forEach(e => {
 
     list.innerHTML += `
 
       <div class="item">
 
-        <div>
+        <div class="item-left">
 
           <h3>
             ${e.title}
@@ -382,12 +539,14 @@ function render() {
         <div class="item-buttons">
 
           <button
+            class="edit-btn"
             onclick="editExpense(${e.id})"
           >
             ✏ Edit
           </button>
 
           <button
+            class="delete-btn"
             onclick="deleteExpense(${e.id})"
           >
             🗑 Delete
@@ -442,7 +601,7 @@ function generateAI(total) {
   ) {
 
     msg =
-      "⚠ Overspending detected! Reduce unnecessary expenses.";
+      "⚠ Overspending detected!";
   }
 
   else if (
@@ -450,7 +609,7 @@ function generateAI(total) {
   ) {
 
     msg =
-      "📊 You are close to your budget limit.";
+      "📊 You are close to budget limit.";
   }
 
   else {
@@ -482,12 +641,17 @@ function drawChart() {
       + e.amount;
   });
 
-  /* DESTROY OLD */
-
   if (pieChart) {
 
     pieChart.destroy();
   }
+
+  const textColor =
+    document.body.classList.contains(
+      "light"
+    )
+      ? "#0f172a"
+      : "#ffffff";
 
   pieChart = new Chart(ctx, {
 
@@ -511,15 +675,7 @@ function drawChart() {
           "#10b981",
           "#f59e0b",
           "#ef4444"
-        ],
-
-        hoverOffset: 15,
-
-        borderRadius: 10,
-
-        borderWidth: 3,
-
-        borderColor: "#0f172a"
+        ]
       }]
     },
 
@@ -527,24 +683,15 @@ function drawChart() {
 
       responsive: true,
 
-      cutout: "65%",
+      maintainAspectRatio: false,
 
       plugins: {
 
         legend: {
 
-          position: "bottom",
-
           labels: {
 
-            color: "white",
-
-            padding: 20,
-
-            font: {
-
-              size: 14
-            }
+            color: textColor
           }
         }
       }
@@ -567,9 +714,3 @@ document.getElementById(
   "change",
   render
 );
-
-/* ================= INIT ================= */
-
-render();
-
-updateDashboard();

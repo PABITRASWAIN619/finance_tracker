@@ -22,13 +22,13 @@
     0 10px 35px rgba(0,0,0,0.35);
 }
 
-/* ================= LIGHT ================= */
+/* ================= LIGHT MODE ================= */
 
 body.light {
 
   --bg: #f1f5f9;
 
-  --card: rgba(255,255,255,0.9);
+  --card: rgba(255,255,255,0.92);
 
   --text: #0f172a;
 
@@ -70,6 +70,19 @@ body {
   min-height: 100vh;
 
   overflow-x: hidden;
+
+  transition: 0.4s ease;
+}
+
+body.light {
+
+  background:
+    linear-gradient(
+      135deg,
+      #dbeafe,
+      #f1f5f9,
+      #e2e8f0
+    );
 }
 
 /* ================= SCROLLBAR ================= */
@@ -90,7 +103,7 @@ body {
   border-radius: 20px;
 }
 
-/* ================= WELCOME ================= */
+/* ================= WELCOME SCREEN ================= */
 
 .welcome-screen {
 
@@ -113,11 +126,13 @@ body {
   align-items: center;
 
   z-index: 9999;
+
+  padding: 20px;
 }
 
 .welcome-box {
 
-  width: 90%;
+  width: 100%;
 
   max-width: 420px;
 
@@ -134,13 +149,15 @@ body {
   text-align: center;
 
   box-shadow: var(--shadow);
+
+  animation: fadeUp 0.8s ease;
 }
 
 .welcome-box h1 {
 
-  margin-bottom: 10px;
-
   font-size: 34px;
+
+  margin-bottom: 10px;
 }
 
 .welcome-box p {
@@ -177,15 +194,24 @@ header {
 
   background: rgba(15,23,42,0.7);
 
-  backdrop-filter: blur(12px);
+  backdrop-filter: blur(14px);
 
   border-bottom: 1px solid var(--border);
+}
+
+body.light header {
+
+  background: rgba(255,255,255,0.75);
 }
 
 header h1 {
 
   font-size: 24px;
+
+  font-weight: 700;
 }
+
+/* ================= HEADER RIGHT ================= */
 
 .header-right {
 
@@ -193,18 +219,48 @@ header h1 {
 
   align-items: center;
 
-  gap: 15px;
+  gap: 14px;
 }
+
+/* ================= USERNAME BOX ================= */
 
 .user-box {
 
   background: rgba(255,255,255,0.08);
 
-  padding: 10px 18px;
+  border: 1px solid var(--border);
+
+  padding: 12px 18px;
 
   border-radius: 14px;
 
   font-weight: 600;
+
+  color: var(--text);
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  min-width: 120px;
+
+  backdrop-filter: blur(12px);
+
+  transition: 0.3s ease;
+}
+
+body.light .user-box {
+
+  background: rgba(255,255,255,0.85);
+
+  color: #0f172a;
+}
+
+.user-box:hover {
+
+  transform: translateY(-2px);
 }
 
 /* ================= BUTTONS ================= */
@@ -225,7 +281,7 @@ button {
 
   cursor: pointer;
 
-  transition: 0.3s ease;
+  transition: all 0.3s ease;
 
   background:
     linear-gradient(
@@ -261,15 +317,17 @@ button:active {
 
 #themeBtn {
 
-  width: 52px;
+  width: 54px;
 
-  height: 52px;
+  height: 54px;
 
   border-radius: 50%;
 
   padding: 0;
 
   font-size: 18px;
+
+  flex-shrink: 0;
 
   background:
     linear-gradient(
@@ -297,7 +355,7 @@ button:active {
 
   margin: 25px;
 
-  border-radius: 28px;
+  border-radius: 30px;
 
   overflow: hidden;
 
@@ -353,9 +411,11 @@ button:active {
 
 .hero-text h1 {
 
-  font-size: 56px;
+  font-size: 58px;
 
   margin-bottom: 18px;
+
+  line-height: 1.1;
 }
 
 .hero-text p {
@@ -467,6 +527,14 @@ select {
   transition: 0.3s ease;
 }
 
+body.light input,
+body.light select {
+
+  background: rgba(255,255,255,0.9);
+
+  color: #0f172a;
+}
+
 input::placeholder {
 
   color: var(--muted);
@@ -479,6 +547,13 @@ select option {
   color: white;
 }
 
+body.light select option {
+
+  background: white;
+
+  color: black;
+}
+
 input:focus,
 select:focus {
 
@@ -488,13 +563,13 @@ select:focus {
     0 0 0 4px rgba(59,130,246,0.2);
 }
 
-/* ================= TITLES ================= */
+/* ================= SECTION TITLE ================= */
 
 .section-title {
 
   padding: 10px 20px;
 
-  font-size: 28px;
+  font-size: 30px;
 
   font-weight: 700;
 }
@@ -553,9 +628,9 @@ select:focus {
   gap: 12px;
 }
 
-/* EDIT BUTTON */
+/* ================= EDIT BUTTON ================= */
 
-.item-buttons button:first-child {
+.edit-btn {
 
   background:
     linear-gradient(
@@ -565,9 +640,9 @@ select:focus {
     );
 }
 
-/* DELETE BUTTON */
+/* ================= DELETE BUTTON ================= */
 
-.item-buttons button:last-child {
+.delete-btn {
 
   background:
     linear-gradient(
@@ -582,6 +657,10 @@ select:focus {
 .charts {
 
   padding: 20px;
+
+  display: flex;
+
+  justify-content: center;
 }
 
 .charts canvas {
@@ -590,7 +669,7 @@ select:focus {
 
   max-width: 700px;
 
-  margin: auto;
+  height: 420px !important;
 
   background: rgba(255,255,255,0.05);
 
@@ -614,6 +693,11 @@ select:focus {
   background: rgba(15,23,42,0.7);
 
   border-top: 1px solid var(--border);
+}
+
+body.light .footer {
+
+  background: rgba(255,255,255,0.7);
 }
 
 .footer-container {
@@ -650,7 +734,7 @@ select:focus {
 
 .footer a:hover {
 
-  color: white;
+  color: var(--text);
 
   transform: translateX(5px);
 }
@@ -664,6 +748,32 @@ select:focus {
   color: var(--muted);
 }
 
+/* ================= EMPTY CARD ================= */
+
+.empty-card {
+
+  text-align: center;
+}
+
+/* ================= ANIMATION ================= */
+
+@keyframes fadeUp {
+
+  from {
+
+    opacity: 0;
+
+    transform: translateY(30px);
+  }
+
+  to {
+
+    opacity: 1;
+
+    transform: translateY(0);
+  }
+}
+
 /* ================= RESPONSIVE ================= */
 
 @media(max-width:900px){
@@ -675,12 +785,12 @@ select:focus {
 
   .hero {
 
-    height: 330px;
+    height: 340px;
   }
 
   .hero-text h1 {
 
-    font-size: 38px;
+    font-size: 40px;
   }
 
   .item {
@@ -695,12 +805,45 @@ select:focus {
 
   header {
 
-    padding: 15px 20px;
+    padding: 15px 16px;
+
+    flex-direction: column;
+
+    gap: 15px;
   }
 
   header h1 {
 
     font-size: 18px;
+
+    text-align: center;
+  }
+
+  .header-right {
+
+    width: 100%;
+
+    justify-content: center;
+
+    flex-wrap: wrap;
+  }
+
+  .user-box {
+
+    width: auto;
+
+    min-width: 140px;
+
+    font-size: 14px;
+
+    text-align: center;
+  }
+
+  #themeBtn {
+
+    width: 50px;
+
+    height: 50px;
   }
 
   .hero {
@@ -741,27 +884,30 @@ select:focus {
     width: 100%;
   }
 
-  .header-right {
-
-    gap: 8px;
-  }
-
-  .user-box {
-
-    font-size: 13px;
-
-    padding: 8px 12px;
-  }
-
   .item-buttons {
 
     width: 100%;
 
     flex-direction: column;
   }
+
+  .charts canvas {
+
+    height: 360px !important;
+  }
 }
 
 @media(max-width:500px){
+
+  .welcome-box {
+
+    padding: 28px 20px;
+  }
+
+  .welcome-box h1 {
+
+    font-size: 28px;
+  }
 
   .hero {
 
@@ -771,6 +917,11 @@ select:focus {
   .hero-text h1 {
 
     font-size: 24px;
+  }
+
+  .hero-text p {
+
+    font-size: 13px;
   }
 
   .card h2 {
@@ -783,5 +934,15 @@ select:focus {
     flex-direction: column;
 
     text-align: center;
+  }
+
+  .section-title {
+
+    font-size: 24px;
+  }
+
+  .charts canvas {
+
+    height: 320px !important;
   }
 }
